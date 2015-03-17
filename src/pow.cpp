@@ -114,3 +114,12 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
     // or ~bnTarget / (nTarget+1) + 1.
     return (~bnTarget / (bnTarget + 1)) + 1;
 }
+
+int64_t GetBlockProofEquivalentTime(const CBlockIndex& from, const CBlockIndex& to, const CBlockIndex& tip)
+{
+    arith_uint256 r = (to.nChainWork - from.nChainWork) * arith_uint256(Params().TargetSpacing()) / GetBlockProof(tip);
+    if (r.bits() > 63) {
+        return std::numeric_limits<int64_t>::max();
+    }
+    return r.GetLow64();
+}
